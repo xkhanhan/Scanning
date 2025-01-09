@@ -54,6 +54,7 @@ export default class Scanning {
    *    @param { String } end required format='YYYY-MM-DD HH:mm:ss'
    *    @param { Number || String } id  only required
    *    @param { String } title
+   * @param isSubdividedconflict 是根据任务数量否细分冲突
    */
   constructor(...arg) {
     this.init(...arg);
@@ -74,8 +75,6 @@ export default class Scanning {
     this.task.add(item.dataSource);
     const taskNumber = this.task.getTaskNumber();
 
-    if (this.overlap) return;
-
     // 当前只有一个任务
     if (taskNumber === 1) {
       this.freePeriodsStartTime = item.time;
@@ -83,7 +82,7 @@ export default class Scanning {
       return;
     }
 
-    if (taskNumber > 1) {
+    if (taskNumber === 2) {
       this.overlap = true;
       this.freePeriodsEndTime = item.time;
       this.conflictPeriodStartTime = item.time;
@@ -97,6 +96,20 @@ export default class Scanning {
       this.clearFreePeriodsTime();
 
       return;
+    }
+
+    if (this.overlap && this.isSubdividedconflict) {
+      if (this.conflictPeriodStartTime === item.time) return;
+
+      this.conflictPeriodEndTime = item.time;
+
+      this.conflictPeriods.push({
+        start: this.conflictPeriodStartTime,
+        end: this.conflictPeriodEndTime,
+        task: nowTask,
+      });
+
+      this.conflictPeriodStartTime = item.time;
     }
   }
 
@@ -132,6 +145,19 @@ export default class Scanning {
       });
 
       this.clearConflictPeriodTime();
+    }
+
+    // 区分多个任务不同的冲突
+    if (this.overlap && this.isSubdividedconflict) {
+      this.conflictPeriodEndTime = item.time;
+
+      this.conflictPeriods.push({
+        start: this.conflictPeriodStartTime,
+        end: this.conflictPeriodEndTime,
+        task: nowTask,
+      });
+
+      this.conflictPeriodStartTime = item.time;
     }
   }
 
@@ -207,7 +233,7 @@ export default class Scanning {
     });
   }
 
-  init(list) {
+  init(list, isSubdividedconflict = true) {
     this.list = list;
 
     // 冲突
@@ -224,6 +250,8 @@ export default class Scanning {
     this.abnormal = []; // 异常数据
     // 是否有冲突
     this.overlap = false;
+
+    this.isSubdividedconflict = isSubdividedconflict;
 
     this.task = new Task();
 
