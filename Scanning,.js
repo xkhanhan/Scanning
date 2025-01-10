@@ -84,6 +84,7 @@ export default class Scanning {
 
     if (taskNumber === 2) {
       this.overlap = true;
+
       this.freePeriodsEndTime = item.time;
       this.conflictPeriodStartTime = item.time;
 
@@ -101,9 +102,9 @@ export default class Scanning {
     }
 
     if (this.overlap && this.isSubdividedconflict) {
-      if (this.conflictPeriodStartTime === item.time) return;
-
       this.conflictPeriodEndTime = item.time;
+
+      if (this.conflictPeriodStartTime === item.time) return;
 
       this.conflictPeriods.push({
         start: this.conflictPeriodStartTime,
@@ -123,9 +124,10 @@ export default class Scanning {
     // 所有任务结束
     if (taskNumber === 0) {
       this.overlap = false;
-      if (this.freePeriodsStartTime === item.time) return;
 
       this.freePeriodsEndTime = item.time;
+
+      if (this.freePeriodsStartTime === item.time) return;
 
       this.freePeriods.push({
         start: this.freePeriodsStartTime,
@@ -140,6 +142,8 @@ export default class Scanning {
       this.conflictPeriodEndTime = item.time;
       this.freePeriodsStartTime = item.time;
 
+      if (this.conflictPeriodStartTime === item.time) return;
+
       this.conflictPeriods.push({
         start: this.conflictPeriodStartTime,
         end: this.conflictPeriodEndTime,
@@ -152,6 +156,8 @@ export default class Scanning {
     // 区分多个任务不同的冲突
     if (this.overlap && this.isSubdividedconflict) {
       this.conflictPeriodEndTime = item.time;
+
+      if (this.conflictPeriodStartTime === item.time) return;
 
       this.conflictPeriods.push({
         start: this.conflictPeriodStartTime,
