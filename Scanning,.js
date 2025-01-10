@@ -87,6 +87,8 @@ export default class Scanning {
       this.freePeriodsEndTime = item.time;
       this.conflictPeriodStartTime = item.time;
 
+      if (this.freePeriodsStartTime === item.time) return;
+
       this.freePeriods.push({
         start: this.freePeriodsStartTime,
         end: this.freePeriodsEndTime,
@@ -163,6 +165,7 @@ export default class Scanning {
 
   scanningList() {
     const arr = this.createTimeList();
+    console.log("arr", arr);
 
     arr.forEach((item) => {
       const nowTask = this.task.getTaskList();
@@ -216,7 +219,15 @@ export default class Scanning {
         id,
       });
     });
-    allTimeArray.sort((a, b) => a.sortTime - b.sortTime);
+
+    // 对数据排序，结束时间和开始时间相同的，结束时间排在前面
+    allTimeArray.sort((a, b) => {
+      if (a.sortTime === b.sortTime) {
+        return a.type === TIME_TYPE_ENUM.END ? -1 : 1;
+      }
+
+      return a.sortTime - b.sortTime;
+    });
 
     return allTimeArray;
   }
