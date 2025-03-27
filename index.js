@@ -1,7 +1,7 @@
 // 定义日程数据
 import schedules from './data'
 
-import {Scanning} from './scanning'
+import {Scanning} from './Scanning'
 
 console.log('schedules', schedules)
 console.log('Scanning', Scanning)
