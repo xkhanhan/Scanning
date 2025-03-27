@@ -156,10 +156,6 @@ export class Scanning {
 
       if (this.conflictPeriodStartTime === item.time) return
 
-      const task = this.conflictPeriodMaxTask.getTaskList()
-      console.log('task', task);
-
-
       this.conflictPeriods.push({
         start: this.conflictPeriodStartTime,
         end: this.conflictPeriodEndTime,
@@ -208,7 +204,7 @@ export class Scanning {
 
     const allTimeArray = []
     arr.forEach(i => {
-      const id = i.id
+      const { id } = i
 
       allTimeArray.push({
         type: TIME_TYPE_ENUM.START,
